@@ -247,8 +247,8 @@ def CodeToStrike(code):
 # ----------------------------------------------------------------------------
 # login
 # ----------------------------------------------------------------------------
-id = "wsp0905"
-passwd = "276727py"
+id = ' '
+passwd = ' '
 cert_passwd = "공인인증서"
 
 instXASession = win32com.client.DispatchWithEvents("XA_Session.XASession", XASessionEventHandler)
@@ -273,26 +273,10 @@ print(ymd)
 kp200 = T1511(101)
 vkospi = T1511(205)
 
-# vkospi 위치에 따른 분류
-if vkospi <= 11.6:
-    v = 1
-elif vkospi > 25.1:
-    v = 6
-elif vkospi < 14.6:
-    v = 2
-elif vkospi > 18.4:
-    v = 5
-elif vkospi < 16.7:
-    v = 3
-else:
-    v = 4
 
 op = T2301(ymd)
 
 nearKp200 = int(kp200 * 0.4) / 0.4
-NearOp = op[op.index >= nearKp200 - 10]
-NearOp = NearOp[NearOp.index <= nearKp200 + 10]
-atm = NearOp.loc[NearOp['LenCP'] == min(NearOp['LenCP'])].index
 
 balance = T0441(acn, pwd)
 
@@ -316,76 +300,3 @@ for i in range(len(balance)):
 
 w = today.weekday()
 # 0 ~ 4 월 ~ 금
-
-if w == 0:
-    if v < 4:
-        OneStopOrder(atm, 2, 'c', 's')
-        OneStopOrder(atm, 2, 'p', 's')
-    if v > 5:
-        OneStopOrder(atm, 3, 'c', 's')
-        OneStopOrder(atm, 3, 'p', 's')
-    if v == 4:
-        OneStopOrder(atm, 3, 'c', 's')
-        OneStopOrder(atm, 3, 'p', 's')
-        OneStopOrder(atm, 1, 'c', 'b')
-        OneStopOrder(atm, 1, 'p', 'b')
-    if v == 5:
-        OneStopOrder(atm, 3, 'c', 's')
-        OneStopOrder(atm, 3, 'p', 's')
-
-if w == 1:
-    if v < 4:
-        OneStopOrder(atm, 2, 'c', 's')
-        OneStopOrder(atm, 2, 'p', 's')
-        OneStopOrder(atm, 1, 'c', 'b')
-        OneStopOrder(atm, 1, 'p', 'b')
-    if v == 4:
-        OneStopOrder(atm, 2, 'c', 's')
-        OneStopOrder(atm, 3, 'p', 's')
-    if v > 5:
-        OneStopOrder(atm, 1, 'c', 's')
-        OneStopOrder(atm, 1, 'p', 's')
-        OneStopOrder(atm, 2, 'c', 'b')
-        OneStopOrder(atm, 2, 'p', 'b')
-
-if w == 2:
-    if v < 4:
-        OneStopOrder(atm, 2, 'c', 's')
-        OneStopOrder(atm, 2, 'p', 's')
-        OneStopOrder(atm, 1, 'c', 'b')
-        OneStopOrder(atm, 1, 'p', 'b')
-    if v > 5:
-        OneStopOrder(atm, 2, 'c', 's')
-        OneStopOrder(atm, 3, 'p', 's')
-    if v == 4:
-        OneStopOrder(atm, 3, 'c', 's')
-        OneStopOrder(atm, 3, 'p', 's')
-        OneStopOrder(atm, 2, 'c', 'b')
-        OneStopOrder(atm, 2, 'p', 'b')
-    if v == 5:
-        OneStopOrder(atm, 4, 'c', 's')
-        OneStopOrder(atm, 4, 'p', 's')
-        OneStopOrder(atm, 3, 'c', 'b')
-        OneStopOrder(atm, 3, 'p', 'b')
-
-if w == 3:
-    if v < 4:
-        OneStopOrder(atm, 2, 'c', 's')
-        OneStopOrder(atm, 3, 'p', 's')
-    if v > 5:
-        OneStopOrder(atm, 3, 'c', 's')
-        OneStopOrder(atm, 3, 'p', 's')
-    if v == 5:
-        OneStopOrder(atm, 1, 'c', 's')
-        OneStopOrder(atm, 1, 'p', 's')
-
-if w == 4:
-    if v == 4:
-        OneStopOrder(atm, 1, 'c', 's')
-        OneStopOrder(atm, 2, 'p', 's')
-    if v > 5:
-        OneStopOrder(atm, 1, 'c', 's')
-        OneStopOrder(atm, 1, 'p', 's')
-    if v == 5:
-        OneStopOrder(atm, 4, 'c', 's')
-        OneStopOrder(atm, 4, 'p', 's')
