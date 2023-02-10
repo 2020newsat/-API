@@ -5,15 +5,10 @@ from pandas import Series, DataFrame
 
 import sys
 
-sys.path.append("C:/Users/박위성/PycharmProjects/XingApi (32bit)/function")
+sys.path.append("./function")
 
-from etc import *
 from tr import *
-
-from CFOAT00100 import *
-from OneStopOrder import *
-from OrderForParameter import *
-from t2105 import *
+from etc import *
 
 
 # ----------------------------------------------------------------------------
@@ -77,7 +72,7 @@ def CodeToStrike(code):
 # ----------------------------------------------------------------------------
 # StriketoCode: 옵션 행사가, 코드 반환 함수
 # ----------------------------------------------------------------------------
-def StrikeToCode(strike, cp):
+def StrikeToCode(strike, op, cp):
     cCode = op.loc[strike, 'cCode'].iloc[0]
     pCode = op.loc[strike, 'pCode'].iloc[0]
     if cp == 'c':
@@ -92,10 +87,31 @@ def StrikeToCode(strike, cp):
 # ----------------------------------------------------------------------------
 def SetOrder(code, qty, bns, order):
     if bns == 'b':
-        qty = -qty
-    if bns == 's':
         qty = qty
+    if bns == 's':
+        qty = -qty
+
+    print("order set:", order)
+    for row in range(len(order)):
+        if order.iloc[row, 0] == code and len(order) > 0:
+            print("old order: ", order)
+            print("code - qty: ", code, qty)
+            order.iloc[row, 1] += qty
+            print("new order: ", order)
+            # code for deleting order
+            # if order.iloc[row, 1] == 0:
+            # print("QTY == 0, len: ", len(order))
+            #  if len(order) > 1:
+            #    print("drop row: ", row)
+            #  order = order.drop(row)
+            # else:
+            #  order = order.drop(order.index[-1])
+
+            # print("modified ", qty, order)
+            return order
+
     new_row = {'code': code, 'qty': qty}
+    # print("new", new_row)
     order = order.append(new_row, ignore_index=True)
     return order
 
@@ -103,16 +119,33 @@ def SetOrder(code, qty, bns, order):
 # ----------------------------------------------------------------------------
 # ClearBalance: 잔고청산
 # ----------------------------------------------------------------------------
-def ClearBalance(balance, order):
+def ClearBalance(balance, maxQty, order):
     for i in range(len(balance)):
         code = balance.iloc[i, 0]
         qty = balance.iloc[i, 2]
         strike = CodeToStrike(code)
 
         if balance.iloc[i, 1] == '매수':
-            bns = 'b'
-        if balance.iloc[i, 1] == '매도':
             bns = 's'
+        if balance.iloc[i, 1] == '매도':
+            bns = 'b'
 
         order = SetOrder(code, qty, bns, order)
+    return order
+
+
+def Straddle(tm, atm, op, maxQty, order):
+    order = SetOrderTM(tm, atm, 'c', 's', op, maxQty, order)
+    order = SetOrderTM(tm, atm, 'p', 's', op, maxQty, order)
+    return order
+
+
+def SetOrderTM(tm, atm, cp, bns, op, maxQty, order):
+    if cp == 'c':
+        strike = atm + tm * 2.5
+        code = StrikeToCode(strike, op, 'c')
+    if cp == 'p':
+        strike = atm - tm * 2.5
+        code = StrikeToCode(strike, op, 'p')
+    order = SetOrder(code, maxQty, bns, order)
     return order
