@@ -31,5 +31,7 @@ ij로 실시간 예상지수 받아서 xxxx88이면 동시호가 완료
 주문 후 sleep사용해서 초당 tr 제한 피하기
 
 pyxing 모듈 차용:
+https://github.com/sharebook-kr/pyxing
+
 아웃블록이 여럿이면 df[1], df[2]식으로 조회
 큐/스택을 사용해서 모듈간 데이터 교환
